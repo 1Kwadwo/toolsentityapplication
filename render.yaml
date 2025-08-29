@@ -7,32 +7,12 @@ services:
     dockerContext: .
     port: 80
     envVars:
-      - key: APP_NAME
-        value: "Tool Management System"
-      - key: APP_ENV
-        value: production
-      - key: APP_DEBUG
-        value: false
       - key: APP_KEY
         generateValue: true
-      - key: APP_URL
-        value: "https://toolsentityapplication.onrender.com"
-      - key: CACHE_DRIVER
-        value: file
-      - key: SESSION_DRIVER
-        value: file
-      - key: QUEUE_CONNECTION
-        value: sync
       - key: DB_CONNECTION
         fromDatabase:
           name: tool-management-db
           property: connectionString
-      - key: LOG_CHANNEL
-        value: stack
-      - key: LOG_LEVEL
-        value: info
-      - key: FILESYSTEM_DISK
-        value: local
     databases:
       - name: tool-management-db
         databaseName: toolmanagement

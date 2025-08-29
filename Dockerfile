@@ -28,66 +28,47 @@ RUN a2enmod rewrite
 # Set working directory
 WORKDIR /var/www/html
 
-# Copy composer files first for better caching
-COPY composer.json composer.lock ./
-RUN composer install --no-dev --optimize-autoloader --no-scripts
-
-# Copy package files
-COPY package.json package-lock.json ./
-RUN npm install
-
-# Copy the rest of the application
+# Copy the entire application
 COPY . .
 
-# Set proper permissions
+# Install dependencies
+RUN composer install --no-dev --optimize-autoloader
+RUN npm install
+RUN npm run build
+
+# Set permissions
 RUN chown -R www-data:www-data /var/www/html
 RUN chmod -R 755 /var/www/html
 RUN chmod -R 775 /var/www/html/storage /var/www/html/bootstrap/cache
 
-# Create sessions directory and set permissions
+# Create necessary directories
 RUN mkdir -p /var/www/html/storage/framework/sessions
-RUN chown -R www-data:www-data /var/www/html/storage/framework/sessions
-RUN chmod -R 775 /var/www/html/storage/framework/sessions
+RUN mkdir -p /var/www/html/storage/framework/cache
+RUN mkdir -p /var/www/html/storage/framework/views
+RUN chown -R www-data:www-data /var/www/html/storage/framework
+RUN chmod -R 775 /var/www/html/storage/framework
 
-# Build frontend assets
-RUN npm run build
-
-# Configure Apache for Laravel
+# Configure Apache
 RUN echo '<VirtualHost *:80>\n\
     DocumentRoot /var/www/html/public\n\
     <Directory /var/www/html/public>\n\
         AllowOverride All\n\
         Require all granted\n\
-        Options Indexes FollowSymLinks\n\
     </Directory>\n\
 </VirtualHost>' > /etc/apache2/sites-available/000-default.conf
 
-# Enable the site
 RUN a2ensite 000-default
 
-# Create startup script
+# Create a simple startup script
 RUN echo '#!/bin/bash\n\
-if [ ! -f .env ]; then\n\
-    cp .env.example .env\n\
-fi\n\
-# Force environment variables to override .env file\n\
-echo "APP_ENV=production" >> .env\n\
-echo "APP_DEBUG=false" >> .env\n\
-echo "SESSION_DRIVER=file" >> .env\n\
-echo "CACHE_STORE=file" >> .env\n\
-echo "QUEUE_CONNECTION=sync" >> .env\n\
-echo "DB_CONNECTION=pgsql" >> .env\n\
 php artisan key:generate --force\n\
 php artisan config:clear\n\
-php artisan config:cache\n\
-php artisan route:cache\n\
-php artisan view:cache\n\
+php artisan cache:clear\n\
+php artisan view:clear\n\
 apache2-foreground' > /usr/local/bin/start.sh
 
 RUN chmod +x /usr/local/bin/start.sh
 
-# Expose port 80
 EXPOSE 80
 
-# Start with our script
 CMD ["/usr/local/bin/start.sh"]
