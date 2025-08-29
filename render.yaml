@@ -5,6 +5,7 @@ services:
     plan: free
     dockerfilePath: ./Dockerfile
     dockerContext: .
+    port: 80
     envVars:
       - key: APP_NAME
         value: "Tool Management System"
