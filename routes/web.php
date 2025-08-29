@@ -10,6 +10,17 @@ use App\Http\Controllers\RentalController;
 use App\Http\Controllers\ReportController;
 use Illuminate\Support\Facades\Route;
 
+// Health check route for debugging
+Route::get('/health', function () {
+    return response()->json([
+        'status' => 'ok',
+        'timestamp' => now(),
+        'app_name' => config('app.name'),
+        'app_env' => config('app.env'),
+        'database' => config('database.default'),
+    ]);
+});
+
 Route::get('/', function () {
     return redirect()->route('dashboard');
 });

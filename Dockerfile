@@ -60,8 +60,21 @@ RUN echo '<VirtualHost *:80>\n\
 # Enable the site
 RUN a2ensite 000-default
 
+# Create startup script
+RUN echo '#!/bin/bash\n\
+if [ ! -f .env ]; then\n\
+    cp .env.example .env\n\
+fi\n\
+php artisan key:generate --force\n\
+php artisan config:cache\n\
+php artisan route:cache\n\
+php artisan view:cache\n\
+apache2-foreground' > /usr/local/bin/start.sh
+
+RUN chmod +x /usr/local/bin/start.sh
+
 # Expose port 80
 EXPOSE 80
 
-# Start Apache
-CMD ["apache2-foreground"]
+# Start with our script
+CMD ["/usr/local/bin/start.sh"]
