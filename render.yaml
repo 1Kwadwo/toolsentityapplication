@@ -1,13 +1,10 @@
 services:
   - type: web
     name: tool-management-system
-    env: php
+    env: docker
     plan: free
-    buildCommand: |
-      composer install --no-dev --optimize-autoloader
-      npm install
-      npm run build
-    startCommand: php artisan serve --host 0.0.0.0 --port $PORT
+    dockerfilePath: ./Dockerfile
+    dockerContext: .
     envVars:
       - key: APP_NAME
         value: "Tool Management System"
@@ -15,6 +12,10 @@ services:
         value: production
       - key: APP_DEBUG
         value: false
+      - key: APP_KEY
+        generateValue: true
+      - key: APP_URL
+        value: "https://toolsentityapplication.onrender.com"
       - key: CACHE_DRIVER
         value: file
       - key: SESSION_DRIVER
@@ -25,8 +26,13 @@ services:
         fromDatabase:
           name: tool-management-db
           property: connectionString
+      - key: LOG_CHANNEL
+        value: stack
+      - key: LOG_LEVEL
+        value: info
+      - key: FILESYSTEM_DISK
+        value: local
     databases:
       - name: tool-management-db
         databaseName: toolmanagement
         user: toolmanagement
-
