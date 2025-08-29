@@ -70,7 +70,15 @@ RUN echo '#!/bin/bash\n\
 if [ ! -f .env ]; then\n\
     cp .env.example .env\n\
 fi\n\
+# Force environment variables to override .env file\n\
+echo "APP_ENV=production" >> .env\n\
+echo "APP_DEBUG=false" >> .env\n\
+echo "SESSION_DRIVER=file" >> .env\n\
+echo "CACHE_STORE=file" >> .env\n\
+echo "QUEUE_CONNECTION=sync" >> .env\n\
+echo "DB_CONNECTION=pgsql" >> .env\n\
 php artisan key:generate --force\n\
+php artisan config:clear\n\
 php artisan config:cache\n\
 php artisan route:cache\n\
 php artisan view:cache\n\
