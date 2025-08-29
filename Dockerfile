@@ -44,6 +44,11 @@ RUN chown -R www-data:www-data /var/www/html
 RUN chmod -R 755 /var/www/html
 RUN chmod -R 775 /var/www/html/storage /var/www/html/bootstrap/cache
 
+# Create sessions directory and set permissions
+RUN mkdir -p /var/www/html/storage/framework/sessions
+RUN chown -R www-data:www-data /var/www/html/storage/framework/sessions
+RUN chmod -R 775 /var/www/html/storage/framework/sessions
+
 # Build frontend assets
 RUN npm run build
 
