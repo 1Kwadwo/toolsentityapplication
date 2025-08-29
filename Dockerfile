@@ -40,12 +40,13 @@ RUN chown -R www-data:www-data /var/www/html
 RUN chmod -R 755 /var/www/html
 RUN chmod -R 775 /var/www/html/storage /var/www/html/bootstrap/cache
 
-# Create necessary directories
+# Create necessary directories and set permissions
 RUN mkdir -p /var/www/html/storage/framework/sessions
 RUN mkdir -p /var/www/html/storage/framework/cache
 RUN mkdir -p /var/www/html/storage/framework/views
-RUN chown -R www-data:www-data /var/www/html/storage/framework
-RUN chmod -R 775 /var/www/html/storage/framework
+RUN mkdir -p /var/www/html/storage/logs
+RUN chown -R www-data:www-data /var/www/html/storage
+RUN chmod -R 775 /var/www/html/storage
 
 # Configure Apache
 RUN echo '<VirtualHost *:80>\n\
