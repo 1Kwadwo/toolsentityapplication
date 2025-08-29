@@ -10,6 +10,19 @@ use App\Http\Controllers\RentalController;
 use App\Http\Controllers\ReportController;
 use Illuminate\Support\Facades\Route;
 
+// Test route to verify application is working
+Route::get('/test', function () {
+    return response()->json([
+        'status' => 'Laravel is working!',
+        'app_name' => config('app.name'),
+        'app_env' => config('app.env'),
+        'session_driver' => config('session.driver'),
+        'cache_driver' => config('cache.default'),
+        'database_connection' => config('database.default'),
+        'timestamp' => now(),
+    ]);
+});
+
 // Health check route for debugging
 Route::get('/health', function () {
     return response()->json([

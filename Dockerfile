@@ -59,8 +59,17 @@ RUN echo '<VirtualHost *:80>\n\
 
 RUN a2ensite 000-default
 
-# Create a simple startup script
+# Create startup script that sets environment variables directly
 RUN echo '#!/bin/bash\n\
+export APP_ENV=production\n\
+export APP_DEBUG=false\n\
+export SESSION_DRIVER=file\n\
+export CACHE_DRIVER=file\n\
+export QUEUE_CONNECTION=sync\n\
+export DB_CONNECTION=pgsql\n\
+export LOG_CHANNEL=stack\n\
+export LOG_LEVEL=info\n\
+export FILESYSTEM_DISK=local\n\
 php artisan key:generate --force\n\
 php artisan config:clear\n\
 php artisan cache:clear\n\
