@@ -7,7 +7,6 @@ RUN apt-get update && apt-get install -y \
     libpng-dev \
     libonig-dev \
     libxml2-dev \
-    libpq-dev \
     zip \
     unzip \
     nodejs \
@@ -17,7 +16,7 @@ RUN apt-get update && apt-get install -y \
 RUN apt-get clean && rm -rf /var/lib/apt/lists/*
 
 # Install PHP extensions
-RUN docker-php-ext-install pdo_mysql pdo_pgsql mbstring exif pcntl bcmath gd
+RUN docker-php-ext-install pdo_sqlite mbstring exif pcntl bcmath gd
 
 # Get latest Composer
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
@@ -59,21 +58,24 @@ RUN echo '<VirtualHost *:80>\n\
 
 RUN a2ensite 000-default
 
-# Create startup script that sets environment variables directly
+# Create startup script for local setup
 RUN echo '#!/bin/bash\n\
-export APP_ENV=production\n\
-export APP_DEBUG=false\n\
+export APP_ENV=local\n\
+export APP_DEBUG=true\n\
 export SESSION_DRIVER=file\n\
 export CACHE_DRIVER=file\n\
 export QUEUE_CONNECTION=sync\n\
-export DB_CONNECTION=pgsql\n\
+export DB_CONNECTION=sqlite\n\
+export DB_DATABASE=/var/www/html/database/database.sqlite\n\
 export LOG_CHANNEL=stack\n\
-export LOG_LEVEL=info\n\
+export LOG_LEVEL=debug\n\
 export FILESYSTEM_DISK=local\n\
 php artisan key:generate --force\n\
 php artisan config:clear\n\
 php artisan cache:clear\n\
 php artisan view:clear\n\
+php artisan migrate --force\n\
+php artisan db:seed --force\n\
 apache2-foreground' > /usr/local/bin/start.sh
 
 RUN chmod +x /usr/local/bin/start.sh

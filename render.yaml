@@ -9,11 +9,3 @@ services:
     envVars:
       - key: APP_KEY
         generateValue: true
-      - key: DB_CONNECTION
-        fromDatabase:
-          name: tool-management-db
-          property: connectionString
-    databases:
-      - name: tool-management-db
-        databaseName: toolmanagement
-        user: toolmanagement
